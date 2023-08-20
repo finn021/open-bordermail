@@ -4,26 +4,35 @@
   <title>URL Loader</title>
 </head>
 <body>
-  <iframe id="contentFrame" frameborder="0"></iframe>
+  <div id="content"></div>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
+    console.log(urlParams);
     const targetURL = urlParams.get('url');
+    console.log(targetURL);
     if (targetURL) {
-      const contentFrame = document.getElementById('contentFrame');
-      contentFrame.src = targetURL;
-      
-      contentFrame.onload = () => {
-        const frameDocument = contentFrame.contentDocument || contentFrame.contentWindow.document;
-        
-        // Get all div elements with the class "hidden" from the loaded content
-        const hiddenDivs = frameDocument.querySelectorAll('div.hidden');
+      fetch(targetURL)
+        .then(response => response.text())
+        .then(content => {
+          // Create a new temporary element to inject the content
+          const tempElement = document.createElement('div');
+          tempElement.innerHTML = content;
+          
+          // Get all div elements with the class "hidden" from the loaded content
+          const hiddenDivs = tempElement.querySelectorAll('div.hidden');
 
-        // Loop through each hidden div and remove the "hidden" class
-        hiddenDivs.forEach(div => {
-          div.classList.remove('hidden');
-          div.classList.remove('gradient-mask-b-0'); // Remove the class "gradient-mask-b-0"
+          // Loop through each hidden div and remove the "hidden" class
+          hiddenDivs.forEach(div => {
+            div.classList.remove('hidden');
+            div.classList.remove('gradient-mask-b-0'); // Remove the class "gradient-mask-b-0"
+          });
+
+          // Replace the content of the 'content' div with the modified content
+          document.getElementById('content').innerHTML = tempElement.innerHTML;
+        })
+        .catch(error => {
+          console.error('Error loading URL:', error);
         });
-      };
     }
   </script>
 </body>
