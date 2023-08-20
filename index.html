@@ -11,7 +11,7 @@
     const targetURL = urlParams.get('url');
     console.log(targetURL);
     if (targetURL) {
-      fetch(targetURL, { mode: 'no-cors' })
+      fetch(targetURL)
         .then(response => response.text())
         .then(content => {
           // Create a new temporary element to inject the content
